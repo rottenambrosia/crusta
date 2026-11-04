@@ -1,6 +1,5 @@
 import java.io.File;
 import java.util.Scanner;
-
 public class Main {
     private static final String ANSI_CYAN = "\u001B[36m";
     private static final String ANSI_RESET = "\u001B[0m";
@@ -20,6 +19,7 @@ public class Main {
                 "Hope you like it. (or something like that)");
         Scanner scanner = new Scanner(System.in);
         String cwd =  System.getProperty("user.dir");
+		String home = System.getProperty("user.home");
         while (true) {
             System.out.print(ANSI_GREEN + "> " + ANSI_RESET);
             System.out.flush();
@@ -35,11 +35,17 @@ public class Main {
             }
             // command : echo
             if (tokens[0].equals("echo")) {
+				if (userInput.trim().length() == 4) {
+					continue;
+				}
                 echo(userInput.substring(5));
                 continue;
             }
             // command : type
             if (tokens[0].equals("type")) {
+				if (userInput.trim().length() == 4) {
+					continue;
+				}
                 type(userInput.substring(5), cwd);
                 continue;
             }
@@ -56,6 +62,10 @@ public class Main {
             // command : cd
             if (tokens[0].equals("cd")) {
                 if(userInput.length() > 2) cwd = changeDirectory(userInput.substring(3), cwd);
+                continue;
+            }
+            if (tokens[0].equals("ls")) {
+                listDirectories("", "");
                 continue;
             }
             System.out.println(tokens[0] + " command not found");
@@ -86,36 +96,7 @@ public class Main {
         }
         return false;
     }
-    // private static File locateExecutable (String command) {
-    //     String path = System.getenv("PATH");
-    //     String[] pathDir =  path.split(File.pathSeparator);
-    //     for (String dir : pathDir) {
-    //         File file = new File(dir, command);
-    //         if (file.isFile() &&  file.canExecute()) {
-    //             return file;
-    //         }
-    //         // Useful on Windows when user enters, for example, "git"
-    //         if (System.getProperty("os.name").toLowerCase().contains("win")) {
-    //             File exeFile = new File(dir, command + ".exe");
-    //             if (exeFile.isFile()) {
-    //                 return exeFile;
-    //             }
-    //         }
-    //     }
-    //     return null;
-    // }
-    // private static void type(String command) {
-    //     if (isBuiltin(command)) {
-    //         System.out.println(command + " is a shell builtin");
-    //     } else if (locateExecutable(command) != null) {
-    //         System.out.println(command + " is " + locateExecutable(command).getAbsolutePath());
-    //     } else {
-    //         System.out.println(command + " : not found");
-    //     }
-    //     return;
-    // }
-
-        private static File locateExecutable(String command) {
+    private static File locateExecutable(String command) {
         return locateExecutable(command, System.getProperty("user.dir"));
     }
 
@@ -170,6 +151,7 @@ public class Main {
         return null;
     }
     private static void type(String command, String cwd) {
+		
         if (isBuiltin(command)) {
             System.out.println(command + " is a shell builtin");
         } else {
@@ -208,5 +190,10 @@ public class Main {
         }
         System.out.println(command + ": No such file or directory");
         return dir;
+    }
+
+    private static void listDirectories(String command, String cwd) {
+    	File file = new File (cwd);
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }
